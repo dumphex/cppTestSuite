@@ -5,4 +5,5 @@ set(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v -g")
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -fno-inline-functions")
 
+add_subdirectory(libutils)
 add_subdirectory(src)
