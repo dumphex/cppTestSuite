@@ -203,36 +203,42 @@ void QuickSort::run() {
   recur(m_buf.get(), 0, m_count - 1);
 }
 
-void QuickSort::recur(int *buf, int l, int r) {
-  if (l < r) {
-    int pivot = partition(buf, l, r);
-    recur(buf, l, pivot - 1);
-    recur(buf, pivot + 1, r);
+void QuickSort::recur(int *buf, int lo, int hi) {
+  if (lo >= hi) {
+    return;
   }
+
+  int pivot = partition(buf, lo, hi);
+  recur(buf, lo, pivot - 1);
+  recur(buf, pivot + 1, hi);
 }
 
 #if 1
-int QuickSort::partition(int *nums, int l, int r) {
-  int pivot = nums[l];
-  int i = l;
-  int j = r + 1;
+// first element as pivot
+int QuickSort::partition(int *buf, int lo, int hi) {
+  int i = lo;
+  int j = hi + 1;
+  int pivot = buf[lo];
 
   while(true) {
-    while(++i < r && nums[i] < pivot);
-    while(--j > l && nums[j] > pivot);
+    while(++i < hi && buf[i] < pivot);
+    while(--j > lo && buf[j] > pivot);
 
     if (i >= j) {
         break;
     }
     
-    std::swap(nums[i], nums[j]);
+    std::swap(buf[i], buf[j]);
   }
 
-  std::swap(nums[l], nums[j]);
+  std::swap(buf[lo], buf[j]);
 
   return j;
 }
+
 #else
+
+// last element as pivot
 int QuickSort::partition(int *buf, int l, int r) {
   int i = l - 1;
   int &key = buf[r];
