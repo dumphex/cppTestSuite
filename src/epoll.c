@@ -8,6 +8,8 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/epoll.h>
 
 #define MAXBUF 256

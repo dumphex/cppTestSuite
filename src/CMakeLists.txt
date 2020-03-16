@@ -1,7 +1,4 @@
-cmake_minimum_required(VERSION 2.8.0)
-project(cppTestSuite)
-
-include_directories("../libutils/")
+include_directories("${PROJECT_SOURCE_DIR}/libutils/")
 
 set(EXTRA_LIBS utils pthread)
 file(GLOB SRC ./*.c*)
