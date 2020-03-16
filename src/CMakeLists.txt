@@ -4,7 +4,6 @@ project(cppTestSuite)
 include_directories("../libutils/")
 
 set(EXTRA_LIBS utils pthread)
-#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-elide-constructors")
 file(GLOB SRC ./*.c*)
 
 foreach(src ${SRC})
@@ -15,3 +14,13 @@ foreach(src ${SRC})
   target_link_libraries(${TEST_NAME}  ${EXTRA_LIBS})
   install(TARGETS ${TEST_NAME} DESTINATION bin)
 endforeach()
+
+execute_process(
+  COMMAND bash "-c" "uname -m|tr -d '\n'"
+  OUTPUT_VARIABLE ARCHITECTURE
+)
+
+message(STATUS "architecture: " ${ARCHITECTURE})
+if ("${ARCHITECTURE}" STREQUAL "aarch64")
+  add_subdirectory(dotproduct)
+endif()
