@@ -30,8 +30,11 @@ class name: public Base {                                       \
 };
 
 REGISTER_CLASS(CPP);
+REGISTER_CLASS(CPPOMP);
+#if defined (__aarch64__)
 REGISTER_CLASS(NEONIntrinsic);
 REGISTER_CLASS(NEONAsm);
+#endif
 
 #undef REGISTER_CLASS
 #endif

@@ -3,6 +3,7 @@
 #include <memory>
 #include <iomanip>
 #include <sys/time.h>
+#include <unistd.h>
 #include "utils.h"
 #include "dotProduct.h"
 
@@ -23,8 +24,11 @@ void Benchmark::run(size_t size) {
 
   std::vector<std::unique_ptr<Base>> vectors;
   vectors.emplace_back(new CPP());
+  vectors.emplace_back(new CPPOMP());
+#if defined (__aarch64__)
   vectors.emplace_back(new NEONIntrinsic());
   vectors.emplace_back(new NEONAsm());
+#endif
 
   std::cout.setf(std::ios::fixed);
 
@@ -58,6 +62,6 @@ int main(int argc, char *argv[])
     bench->run(size);
   }
 
+  pause();
   return 0;
 }
-

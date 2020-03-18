@@ -1,18 +1,37 @@
 #include <iostream>
-#include <arm_neon.h>
 #include <math.h>
+#include <omp.h>
+#if defined (__aarch64__)
+#include <arm_neon.h>
+#endif
 #include "dotProduct.h"
 
 float CPP::dotProduct(const std::vector<float> &v1,
                       const std::vector<float> &v2) {
+  size_t size = v1.size();
   float mac = 0.0;
-  for (size_t i = 0 ; i < v1.size(); i++) {
+
+  for (size_t i = 0; i < size; i++) {
     mac += v1[i] * v2[i];
   }
 
   return mac;
 }
 
+float CPPOMP::dotProduct(const std::vector<float> &v1,
+                         const std::vector<float> &v2) {
+  int size = v1.size();
+  float mac = 0.0;
+
+  #pragma omp parallel for reduction(+:mac)
+  for (int i = 0; i < size; i++) {
+    mac += v1[i] * v2[i];
+  }
+
+  return mac;
+}
+
+#if defined (__aarch64__)
 float NEONIntrinsic::dotProduct(const std::vector<float> &v1,
                                 const std::vector<float> &v2) {
    float mac = 0;
@@ -50,3 +69,4 @@ float NEONAsm::dotProduct(const std::vector<float> &v1,
   return dotProductImpl(v1, v2);
 }
 
+#endif

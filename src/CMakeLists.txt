@@ -16,8 +16,6 @@ execute_process(
   COMMAND bash "-c" "uname -m|tr -d '\n'"
   OUTPUT_VARIABLE ARCHITECTURE
 )
-
 message(STATUS "architecture: " ${ARCHITECTURE})
-if ("${ARCHITECTURE}" STREQUAL "aarch64")
-  add_subdirectory(dotproduct)
-endif()
+
+add_subdirectory(dotproduct)
