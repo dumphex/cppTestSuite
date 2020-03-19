@@ -18,7 +18,7 @@ float CPP::dotProduct(const std::vector<float> &v1,
   return mac;
 }
 
-float CPPOMP::dotProduct(const std::vector<float> &v1,
+float OpenMP::dotProduct(const std::vector<float> &v1,
                          const std::vector<float> &v2) {
   int size = v1.size();
   float mac = 0.0;
@@ -39,7 +39,6 @@ float NEONIntrinsic::dotProduct(const std::vector<float> &v1,
    size_t leftover = size % 4;
    float32x4_t ret = vdupq_n_f32(0);
 
-   // NEON optimization: handle 4 float numbers at a time
    for (size_t i = 0; i < size / 4; ++i) {
        float32x4_t tmp1 = vld1q_f32(&v1[4 * i]);
        float32x4_t tmp2 = vld1q_f32(&v2[4 * i]);
@@ -51,7 +50,6 @@ float NEONIntrinsic::dotProduct(const std::vector<float> &v1,
    mac += vgetq_lane_f32(ret, 2);
    mac += vgetq_lane_f32(ret, 3);
 
-   // handle the leftover in the vectors
    for(size_t i = size - leftover; i < size; i++) {
        mac += v1[i] * v2[i];
    }

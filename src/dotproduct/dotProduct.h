@@ -30,7 +30,7 @@ class name: public Base {                                       \
 };
 
 REGISTER_CLASS(CPP);
-REGISTER_CLASS(CPPOMP);
+REGISTER_CLASS(OpenMP);
 #if defined (__aarch64__)
 REGISTER_CLASS(NEONIntrinsic);
 REGISTER_CLASS(NEONAsm);

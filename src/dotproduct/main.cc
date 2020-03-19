@@ -24,7 +24,7 @@ void Benchmark::run(size_t size) {
 
   std::vector<std::unique_ptr<Base>> vectors;
   vectors.emplace_back(new CPP());
-  vectors.emplace_back(new CPPOMP());
+  vectors.emplace_back(new OpenMP());
 #if defined (__aarch64__)
   vectors.emplace_back(new NEONIntrinsic());
   vectors.emplace_back(new NEONAsm());
@@ -58,10 +58,9 @@ void Benchmark::init(std::vector<float> &v, const size_t size) {
 int main(int argc, char *argv[])
 {
   std::unique_ptr<Benchmark> bench(new Benchmark());
-  for(size_t size = 32; size <= 256; size *= 2) {
+  for(size_t size = 256; size <= 4096; size *= 2) {
     bench->run(size);
   }
 
-  pause();
   return 0;
 }
