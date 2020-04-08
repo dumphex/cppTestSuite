@@ -27,7 +27,7 @@ void Benchmark::run(size_t size) {
   vectors.emplace_back(new OpenMP());
 #if defined (__aarch64__)
   vectors.emplace_back(new NEONIntrinsic());
-  vectors.emplace_back(new NEONAsm());
+  //vectors.emplace_back(new NEONAsm());
 #endif
 
   std::cout.setf(std::ios::fixed);
@@ -35,12 +35,12 @@ void Benchmark::run(size_t size) {
   std::cout << "size = " << size << std::endl;
   for(auto &v : vectors) {
     size_t idx = 0;
-    float sum = 0.0;
+    float mac = 0.0;
     ScopedTiming st(v->getName());
     while(idx++ < COUNT) {
-      sum += v->dotProduct(v1, v2);
+      mac += v->dotProduct(v1, v2);
     }
-    //std::cout << "sum = " << std::setprecision(6) << sum << std::endl;
+    std::cout << "mac = " << std::setprecision(6) << mac << "  ";
   }
   std::cout << std::endl;
 
@@ -50,6 +50,7 @@ void Benchmark::init(std::vector<float> &v, const size_t size) {
   std::default_random_engine e;
   std::uniform_real_distribution<float> u(1.0, 10.0);
 
+  v.reserve(size);
   for(size_t i = 0; i < size; i++) {
      v.push_back(u(e));
   }

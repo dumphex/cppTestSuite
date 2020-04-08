@@ -34,27 +34,28 @@ float OpenMP::dotProduct(const std::vector<float> &v1,
 #if defined (__aarch64__)
 float NEONIntrinsic::dotProduct(const std::vector<float> &v1,
                                 const std::vector<float> &v2) {
-   float mac = 0;
-   size_t size = v1.size();
-   size_t leftover = size % 4;
-   float32x4_t ret = vdupq_n_f32(0);
+  float mac = 0;
+  size_t size = v1.size();
+  float32x4_t v = vdupq_n_f32(0);
 
-   for (size_t i = 0; i < size / 4; ++i) {
-       float32x4_t tmp1 = vld1q_f32(&v1[4 * i]);
-       float32x4_t tmp2 = vld1q_f32(&v2[4 * i]);
-       ret = vmlaq_f32(ret, tmp1, tmp2);
-   }
+  size_t counter = size / 4;
+  size_t idx = 0;
+  for (size_t i = 0; i < counter; i++) {
+    idx = i << 2;
+    v = vmlaq_f32(v, vld1q_f32(&v1[idx]), vld1q_f32(&v2[idx]));
+  }
 
-   mac += vgetq_lane_f32(ret, 0);
-   mac += vgetq_lane_f32(ret, 1);
-   mac += vgetq_lane_f32(ret, 2);
-   mac += vgetq_lane_f32(ret, 3);
+  mac += vgetq_lane_f32(v, 0);
+  mac += vgetq_lane_f32(v, 1);
+  mac += vgetq_lane_f32(v, 2);
+  mac += vgetq_lane_f32(v, 3);
 
-   for(size_t i = size - leftover; i < size; i++) {
-       mac += v1[i] * v2[i];
-   }
+  size_t leftover = size % 4;
+  for(size_t i = size - leftover; i < size; i++) {
+    mac += v1[i] * v2[i];
+  }
 
-   return mac;
+  return mac;
 }
 
 extern "C" {
