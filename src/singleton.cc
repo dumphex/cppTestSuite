@@ -1,14 +1,11 @@
 #include <iostream>
 #include <mutex>
 #include <atomic>
+#include <memory>
 
 // SingletonEager
 class SingletonEager {
  public:
-  ~SingletonEager() {
-    std::cout << __FUNCTION__ << " is caled. " << std::endl;
-  }
-
   static SingletonEager & getInstance() {
     return m_instance;
   }
@@ -19,6 +16,11 @@ class SingletonEager {
   SingletonEager() {
     std::cout << __FUNCTION__ << " is caled. " << std::endl;
   }
+
+  ~SingletonEager() {
+    std::cout << __FUNCTION__ << " is caled. " << std::endl;
+  }
+
   SingletonEager(const SingletonEager & s);
   SingletonEager& operator =(const SingletonEager & s);
 };
@@ -26,24 +28,44 @@ class SingletonEager {
 SingletonEager SingletonEager::m_instance;
 
 // SingletonLazy
+#if 1
+class SingletonLazy {
+ public:
+  static std::unique_ptr<SingletonLazy> & getInstance() {
+    std::lock_guard<std::mutex> lck(m_mtx);
+    if(m_instance == nullptr) {
+      m_instance.reset(new SingletonLazy());
+    }
+
+    return m_instance;
+  }
+
+  ~SingletonLazy() {
+    std::cout << __FUNCTION__ << " is caled. " << std::endl;
+  }
+
+ private:
+  static std::mutex m_mtx;
+  static std::unique_ptr<SingletonLazy> m_instance;
+
+  SingletonLazy() {
+    std::cout << __FUNCTION__ << " is caled. " << std::endl;
+  }
+
+  SingletonLazy(const SingletonLazy & s);
+  SingletonLazy& operator =(const SingletonLazy & s);
+};
+
+std::mutex SingletonLazy::m_mtx;
+std::unique_ptr<SingletonLazy> SingletonLazy::m_instance;
+
+#else
 class SingletonLazy {
  public:
   ~SingletonLazy() {
     std::cout << __FUNCTION__ << " is caled. " << std::endl;
   }
 
-#define ATOMIC
-
-#ifndef ATOMIC
-  static SingletonLazy & getInstance() {
-    std::lock_guard<std::mutex> lck(m_mtx);
-    if(m_instance == nullptr) {
-      m_instance = new SingletonLazy();
-    }
-
-    return *m_instance;
-  }
-#else
 #if 0
   static SingletonLazy& getInstance() {
     if(m_instance == nullptr) {
@@ -72,15 +94,10 @@ class SingletonLazy {
     return *p;
   }
 #endif
-#endif
 
  private:
   static std::mutex m_mtx;
-#ifndef ATOMIC
-  static SingletonLazy *m_instance;
-#else
   static std::atomic<SingletonLazy *> m_instance;
-#endif
 
   SingletonLazy() {
     std::cout << __FUNCTION__ << " is caled. " << std::endl;
@@ -91,19 +108,12 @@ class SingletonLazy {
 };
 
 std::mutex SingletonLazy::m_mtx;
-#ifndef ATOMIC
-SingletonLazy *SingletonLazy::m_instance = nullptr;
-#else
 std::atomic<SingletonLazy *> SingletonLazy::m_instance(nullptr);
 #endif
 
 // local static
 class SingletonLocalStatic {
  public:
-  ~SingletonLocalStatic() {
-     std::cout << __FUNCTION__ << " is caled. " << std::endl;
-  }
-
   static SingletonLocalStatic & getInstance() {
     static SingletonLocalStatic instance;
     return instance;
@@ -113,6 +123,11 @@ class SingletonLocalStatic {
   SingletonLocalStatic() {
      std::cout << __FUNCTION__ << " is caled. " << std::endl;
   }
+
+  ~SingletonLocalStatic() {
+     std::cout << __FUNCTION__ << " is caled. " << std::endl;
+  }
+
   SingletonLocalStatic(const SingletonLocalStatic & s);
   SingletonLocalStatic& operator =(const SingletonLocalStatic & s);
 };
@@ -122,10 +137,13 @@ int main(int argc, char *argv[]) {
   //SingletonEager se;
   //SingletonEager *pse = new SingletonEager();
   SingletonEager & tmp1 = SingletonEager::getInstance();
+  //SingletonEager t2 = SingletonEager::getInstance();
+  //SingletonEager t3;
+  //t3 = SingletonEager::getInstance();
 
   //SingletonLazy sl;
   //SingletonLazy *psl = new SingletonLazy();
-  SingletonLazy & tmp2 = SingletonLazy::getInstance();
+  std::unique_ptr<SingletonLazy> & tmp2 = SingletonLazy::getInstance();
 
   //SingletonLocalStatic sls;
   //SingletonLocalStatic *psls = new SingletonLocalStatic();
