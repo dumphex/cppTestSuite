@@ -103,6 +103,7 @@ class DerivedMutex : public Base {
   int m_var;
 };
 
+#define SEQ_CST
 class DerivedAtomic : public Base {
  public:
   DerivedAtomic() : m_var(0) {
@@ -115,7 +116,7 @@ class DerivedAtomic : public Base {
 
   void iplus(int count) {
     while (count--) {
-#if 0
+#ifdef SEQ_CST
       m_var++;
 #else
       m_var.fetch_add(1, std::memory_order_relaxed);
@@ -125,7 +126,7 @@ class DerivedAtomic : public Base {
 
   void iminus(int count) {
     while (count--) {
-#if 0
+#ifdef SEQ_CST
       m_var--;
 #else
       m_var.fetch_sub(1, std::memory_order_relaxed);
