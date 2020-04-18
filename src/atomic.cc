@@ -20,7 +20,6 @@ class Base {
      t1.join();
      t2.join();
   }
-
 };
 
 class Derived : public Base {
@@ -47,6 +46,32 @@ class Derived : public Base {
 
  private:
   int m_var;
+};
+
+class DerivedVolatile : public Base {
+ public:
+  DerivedVolatile() : m_var(0) {
+    std::cout << __FUNCTION__ << " : m_var = " << m_var << std::endl;
+  }
+
+  ~DerivedVolatile() {
+    std::cout << __FUNCTION__ << " : m_var = " << m_var << std::endl << std::endl;
+  }
+
+  void iplus(int count) {
+    while (count--) {
+      m_var++;
+    }
+  }
+
+  void iminus(int count) {
+    while (count--) {
+      m_var--;
+    }
+  }
+
+ private:
+  volatile int m_var;
 };
 
 class DerivedMutex : public Base {
@@ -115,6 +140,10 @@ class DerivedAtomic : public Base {
 
 int main(int argc, char *argv[]) {
   std::unique_ptr<Base> d(new Derived());
+  d->bench();
+  d.reset();
+
+  d.reset(new DerivedVolatile());
   d->bench();
   d.reset();
 
